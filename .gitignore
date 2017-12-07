@@ -1,0 +1,10 @@
+datasets/MR/
+datasets/SST/
+datasets/TREC/
+datasets/CR/
+datasets/.DS_Store
+
+embs/word2vec
+embs/glove
+embs/.DS_Store
+.DS_Store
