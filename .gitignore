@@ -3,8 +3,13 @@ datasets/SST/
 datasets/TREC/
 datasets/CR/
 datasets/.DS_Store
+datasets/*.pyc
 
 embs/word2vec
 embs/glove
 embs/.DS_Store
+embs/*.pyc
+
+utils/*.pyc
+*.pyc
 .DS_Store
