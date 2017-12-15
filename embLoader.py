@@ -6,8 +6,13 @@ import deepdish as dd
 import numpy as np
 import tensorflow as tf
 
+
+__all__ = ['embLoader']
+
+
 class embLoader(object):
     def __init__(self, embSize, embType, inVocab, trainEmb=False):
+        self.embSize = embSize
         notShown = 0
         if embType == 'glove':
             tmp = dd.io.load('embs/glove/embLookup50.sc')

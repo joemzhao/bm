@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 
 
-class rnnModel(object):
+class rcuModel(object):
     def __init__(self, hSize, ct, dropout, layers, init, mode):
         self.defaultCell = lambda: self.getCell(
             hSize, ct, dropout, layers, init, mode)
@@ -24,5 +24,6 @@ class rnnModel(object):
         cs = [c] * layers
         c = tf.contrib.rnn.MultiRNNCell(cells=cs, state_is_tuple=True)
         if mode == 'train' and dropout > 0:
-            c = tf.contrib.rnn.DropoutWrapper(cell=c, dtype=tf.float32, input_keep_prob=1.-dropout, output_keep_prob=1.-dropout)
+            c = tf.contrib.rnn.DropoutWrapper(cell=c, dtype=tf.float32,
+                input_keep_prob=1.-dropout, output_keep_prob=1.-dropout)
         return c

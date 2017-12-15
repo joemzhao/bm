@@ -10,11 +10,18 @@ import itertools
 import numpy as np
 
 
+__all__ = ['mrLoader']
+
+
+def getOneHot(y):
+    return [[0, 1] if i == 0 else [1, 0] for i in y]
+
+
 class mrLoader(baseSentIter):
     def __init__(self,
                  sents,
                  label,
-                 batchSize=5,
+                 batchSize=64,
                  sparseEmb=True):
         super(mrLoader, self).__init__(batchSize, sents, label)
         self.buildVocab(sparseEmb)
@@ -36,7 +43,7 @@ class mrLoader(baseSentIter):
         self.ptr += self.b
         assert len(xRet) == self.b
         assert len(yRet) == self.b
-        return np.asarray(xRet), np.asarray(yRet)
+        return np.asarray(xRet), np.asarray(getOneHot(yRet))
 
     def buildVocab(self, sparseEmb=True):
         aux = ['<s>', '</s>', '<unk>', '<pad>']
