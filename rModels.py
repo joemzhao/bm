@@ -71,8 +71,8 @@ class naiveRecurrentClassifier(rcuModel):
                 [0])), tf.gather(tf.shape(outputs), [0, 1])), dim=1)
             wh = tf.reduce_sum(tf.tile(
                 tf.expand_dims(Alpha, -1), [1, 1, self.h]) * outputs, axis=1)
-        wh = tf.layers.dense(inputs=wh, units=self.h/2, activation=None)
-        logits = tf.layers.dense(inputs=wh, units=2, activation=tf.nn.tanh)
+        wh = tf.layers.dense(inputs=wh, units=self.h/2, activation=tf.nn.tanh)
+        logits = tf.layers.dense(inputs=wh, units=2, activation=None)
         return logits
 
     def getOps(self, lr=0.001, clip=5., opt='adam'):
