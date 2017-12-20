@@ -14,7 +14,7 @@ import tensorflow as tf
 
 def master(sents, label):
     data = mrLoader(sents, label)
-    emb = embLoader(64, 'random', data.vocab)
+    emb = embLoader(50, 'glove', data.reVocab)
     model = naiveRecurrentClassifier(emb.emb)
     train_op = model.getOps()
     sess = tf.Session()

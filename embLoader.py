@@ -2,6 +2,8 @@ from __future__ import division
 from __future__ import absolute_import
 from __future__ import print_function
 
+from six.moves import xrange
+
 import deepdish as dd
 import numpy as np
 import tensorflow as tf
@@ -13,9 +15,13 @@ __all__ = ['embLoader']
 class embLoader(object):
     def __init__(self, embSize, embType, inVocab, trainEmb=False):
         self.embSize = embSize
+        self.trainEmb = trainEmb
         notShown = 0
         if embType == 'glove':
-            tmp = dd.io.load('embs/glove/embLookup50.sc')
+            if embSize > 50:
+                tmp = dd.io.load('embs/glove/embLookup300.sc')
+            else:
+                tmp = dd.io.load('embs/glove/embLookup50.sc')
             self.emb = []
             for idx in xrange(len(inVocab)):
                 wd = inVocab[idx]
@@ -33,8 +39,8 @@ class embLoader(object):
         elif embType == 'random':
             with tf.variable_scope('embeddings/'):
                 self.emb = tf.get_variable(name='embW', dtype=tf.float32,
-                shape=[len(inVocab), self.embSize], trainable=trainEmb,
-                initializer=tf.truncated_normal_initializer())
+                    shape=[len(inVocab), self.embSize], trainable=trainEmb,
+                    initializer=tf.truncated_normal_initializer())
         else:
             raise Exception('No supported embedding type!')
 

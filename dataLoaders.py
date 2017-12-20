@@ -5,6 +5,7 @@ from __future__ import print_function
 from sys import exit
 from utils.iterators import *
 from utils.iterHelpers import *
+from overrides import overrides
 
 import itertools
 import numpy as np
@@ -26,7 +27,22 @@ class mrLoader(baseSentIter):
         super(mrLoader, self).__init__(batchSize, sents, label)
         self.buildVocab(sparseEmb)
 
+    def buildVocab(self, sparseEmb=True):
+        aux = ['<s>', '</s>', '<unk>', '<pad>']
+        tmp = aux + list(itertools.chain.from_iterable(self.x))
+        for idx, wd in enumerate(tmp):
+            if wd in self.vocab:
+                continue
+            else:
+                self.vocab[wd] = len(self.vocab)
+        self.reVocab = {v: k for k, v in self.vocab.iteritems()}
+        del aux, tmp
+        print('* Created vocabulary with type sparseEmb is ' + str(sparseEmb))
+
     def nextBatch(self):
+        return self._nextBatch()
+
+    def _nextBatch(self):
         if (self.ptr+self.b) < len(self.x):
             xRet = self.x[self.ptr:self.ptr+self.b]
             yRet = self.y[self.ptr:self.ptr+self.b]
@@ -45,17 +61,23 @@ class mrLoader(baseSentIter):
         assert len(yRet) == self.b
         return np.asarray(xRet), np.asarray(getOneHot(yRet))
 
-    def buildVocab(self, sparseEmb=True):
-        aux = ['<s>', '</s>', '<unk>', '<pad>']
-        tmp = aux + list(itertools.chain.from_iterable(self.x))
-        for idx, wd in enumerate(tmp):
-            if wd in self.vocab:
-                continue
-            else:
-                self.vocab[wd] = len(self.vocab)
-        self.reVocab = {v: k for k, v in self.vocab.iteritems()}
-        del aux, tmp
-        print('* Created vocabulary with type sparseEmb is ' + str(sparseEmb))
+
+class convMrLoader(mrLoader):
+    def __init__(self,
+                 sents,
+                 label,
+                 batchSize=64,
+                 sparseEmb=True,
+                 maxSeqLen):
+        super(convMrLoader, self).__init__(sents, label, batchSize, sparseEmb):
+        self.msl = maxSeqLen
+
+    @overrides
+    def nextBatch(self):
+        
+
+
+
 
 if __name__ == '__main__':
     pathP = 'datasets/MR/rt-polarity.pos'
