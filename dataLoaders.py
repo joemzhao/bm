@@ -66,17 +66,16 @@ class convMrLoader(mrLoader):
     def __init__(self,
                  sents,
                  label,
+                 maxSeqLen,
                  batchSize=64,
-                 sparseEmb=True,
-                 maxSeqLen):
-        super(convMrLoader, self).__init__(sents, label, batchSize, sparseEmb):
+                 sparseEmb=True):
+
+        super(convMrLoader, self).__init__(sents, label, batchSize, sparseEmb)
         self.msl = maxSeqLen
 
     @overrides
     def nextBatch(self):
-        
-
-
+        pass
 
 
 if __name__ == '__main__':

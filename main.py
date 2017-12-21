@@ -2,10 +2,11 @@ from __future__ import division
 from __future__ import absolute_import
 from __future__ import print_function
 
-from utils.iterHelpers import *
-
 from sys import exit
+
+from utils.iterHelpers import *
 from rModels import *
+from cModels import *
 from embLoader import *
 from dataLoaders import *
 
@@ -15,7 +16,7 @@ import tensorflow as tf
 def master(sents, label):
     data = mrLoader(sents, label)
     emb = embLoader(50, 'glove', data.reVocab)
-    model = naiveRecurrentClassifier(emb.emb)
+    model = baseConvClassifier(emb)
     train_op = model.getOps()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
