@@ -16,7 +16,7 @@ import tensorflow as tf
 def master(sents, label):
     data = mrLoader(sents, label)
     emb = embLoader(50, 'glove', data.reVocab)
-    model = baseConvClassifier(emb)
+    model = naiveRecurrentClassifier(emb.emb)
     train_op = model.getOps()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())

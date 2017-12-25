@@ -16,13 +16,13 @@ __all__ = ['baseConvClassifier']
 class baseConvClassifier(convModel):
     def __init__(self,
                  emb,
-                 bSize=128,
+                 bSize=64,
                  mType='hybrid',
-                 seqLen=12,
+                 seqLen=100,
                  numClass=2,
                  filterSizes=[2, 3, 4],
                  numFilters=64,
-                 l2=0.1
+                 l2=0.1,
                  dropout=0.1):
         super(baseConvClassifier, self).__init__(
             bSize, seqLen, filterSizes, numFilters, l2)
@@ -59,12 +59,12 @@ class baseConvClassifier(convModel):
                     strides=[1, 1, 1, 1], padding='VALID', name="pool")
                 poolRes.append(_pooled)
         _f = tf.reshape(tf.concat(poolRes, -1), [-1, len(self.fts)*self.nfs])
-        _f = tf.nn.dropout(f, 1.-dropout)
+        _f = tf.nn.dropout(_f, 1.-dropout)
         l2_loss = tf.constant(0.0)
         with tf.variable_scope('projection/'):
             pW = tf.get_variable('W', shape=[len(self.fts)*self.nfs, numClass],
                 initializer=tf.contrib.layers.xavier_initializer())
-            pb = tf.get_variable(tf.constant(0.1, shape=[numClass]), name='b')
+            pb = tf.Variable(tf.constant(0.1, shape=[numClass]), name='b')
         l2_loss += tf.nn.l2_loss(pW)
         l2_loss += tf.nn.l2_loss(pb)
 
@@ -77,3 +77,11 @@ class baseConvClassifier(convModel):
         with tf.variable_scope('evaluation/'):
             corr = tf.equal(self.pred, tf.argmax(self.tats, 1))
             self.acc = tf.reduce_mean(tf.cast(corr, tf.float32))
+
+    def getOps(self, lr=0.001, clip=1., opt='adam'):
+        opt = tf.train.AdamOptimizer(lr)
+        grads = opt.compute_gradients(self.loss)
+        with tf.variable_scope('grad_clip'):
+            clip_grads = [(tf.clip_by_norm(grad, clip), v) for grad, v in grads]
+        train_op = opt.apply_gradients(clip_grads)
+        return train_op

@@ -11,7 +11,7 @@ import itertools
 import numpy as np
 
 
-__all__ = ['mrLoader']
+__all__ = ['mrLoader', 'convMrLoader']
 
 
 def getOneHot(y):
@@ -66,23 +66,29 @@ class convMrLoader(mrLoader):
     def __init__(self,
                  sents,
                  label,
-                 maxSeqLen,
-                 batchSize=64,
+                 maxSeqLen=100,
+                 batchSize=1,
                  sparseEmb=True):
-
         super(convMrLoader, self).__init__(sents, label, batchSize, sparseEmb)
         self.msl = maxSeqLen
+        self._push = lambda x: np.concatenate((x,
+            self.vocab['<pad>']*np.ones((self.b, self.msl-x.shape[1]))), axis=1)
+        self._pop = lambda x: x[:, :self.msl]
 
     @overrides
     def nextBatch(self):
-        pass
+        _x, yRet = self._nextBatch()
+        xRet = self._push(_x) if _x.shape[1] <= self.msl else self._pop(_x)
+        assert xRet.shape[1] == self.msl
+        return xRet, yRet
 
 
 if __name__ == '__main__':
     pathP = 'datasets/MR/rt-polarity.pos'
     pathN = 'datasets/MR/rt-polarity.neg'
     sents, label = mrProcess(pathP, pathN)
-    mrLoader = mrLoader(sents, label)
+    mrLoader = convMrLoader(sents, label)
     while True:
         a, b = mrLoader.nextBatch()
-        print (a.shape)
+        print (a)
+        exit()
