@@ -14,10 +14,11 @@ import numpy as np
 import tensorflow as tf
 
 def master(sents, label):
-    data = mrLoader(sents, label)
+    data = convMrLoader(sents, label)
     emb = embLoader(50, 'glove', data.reVocab)
-    model = naiveRecurrentClassifier(emb.emb)
+    model = baseConvClassifier(emb)
     train_op = model.getOps()
+    print (tf.trainable_variables())
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
     while True:

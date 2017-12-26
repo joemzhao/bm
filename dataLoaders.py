@@ -67,7 +67,7 @@ class convMrLoader(mrLoader):
                  sents,
                  label,
                  maxSeqLen=100,
-                 batchSize=1,
+                 batchSize=64,
                  sparseEmb=True):
         super(convMrLoader, self).__init__(sents, label, batchSize, sparseEmb)
         self.msl = maxSeqLen

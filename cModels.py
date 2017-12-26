@@ -28,24 +28,29 @@ class baseConvClassifier(convModel):
             bSize, seqLen, filterSizes, numFilters, l2)
         self.inps = tf.placeholder(
             shape=[bSize, seqLen], dtype=tf.int32, name='inputSents')
-        with tf.device('/cpu:0'):
-            self.inpsEmb = tf.nn.embedding_lookup(emb.emb, self.inps)
         self.tats = tf.placeholder(
             shape=[bSize, numClass], dtype=tf.int32, name='targets')
-        self.buildGraph(mType, emb, dropout, numClass)
-
-    def buildGraph(self, mType, emb, dropout, numClass):
-        es = emb.embSize
-        self.inpsEmb = tf.expand_dims(self.inpsEmb, -1)
+        with tf.device('/cpu:0'):
+            inpsEmb = tf.nn.embedding_lookup(emb.emb, self.inps)
+        inpsEmb = tf.expand_dims(inpsEmb, -1)
         if mType == 'static':
             _c = 1
         elif mType == 'hybrid':
             assert emb.trainEmb == False
-            dynamicEmb = tf.Variable(initial_value=self.inpsEmb, trainable=True)
-            self.inpsEmb = tf.concat([self.inpsEmb, dynamicEmb], axis=-1)
             _c = 2
+            with tf.variable_scope('embeddings/'):
+                dEmb = tf.Variable(initial_value=emb.emb, name='dembW', trainable=True)
+            with tf.device('/cpu:0'):
+                dynamicInpsEmb = tf.nn.embedding_lookup(dEmb, self.inps)
+            dynamicInpsEmb = tf.expand_dims(dynamicInpsEmb, -1)
+            inpsEmb = tf.concat([inpsEmb, dynamicInpsEmb], -1)
         else:
             raise Exception('Incorrect input number of channel. Require 1 or 2.')
+        self.inpsEmb = inpsEmb
+        self.buildGraph(_c, emb, dropout, numClass)
+
+    def buildGraph(self, _c, emb, dropout, numClass):
+        es = emb.embSize
         poolRes = []
         for i , fs in enumerate(self.fts):
             with tf.variable_scope('conv-maxpool-%s' % str(fs)):
@@ -81,7 +86,7 @@ class baseConvClassifier(convModel):
     def getOps(self, lr=0.001, clip=1., opt='adam'):
         opt = tf.train.AdamOptimizer(lr)
         grads = opt.compute_gradients(self.loss)
-        with tf.variable_scope('grad_clip'):
+        with tf.variable_scope('grad_clip/'):
             clip_grads = [(tf.clip_by_norm(grad, clip), v) for grad, v in grads]
         train_op = opt.apply_gradients(clip_grads)
         return train_op
