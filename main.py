@@ -18,7 +18,6 @@ def master(sents, label):
     emb = embLoader(50, 'glove', data.reVocab)
     model = baseConvClassifier(emb)
     train_op = model.getOps()
-    print (tf.trainable_variables())
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
     while True:
