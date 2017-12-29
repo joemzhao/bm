@@ -11,5 +11,9 @@ embs/.DS_Store
 embs/*.pyc
 
 utils/*.pyc
+base/*.pyc
+
+saved_model/
+
 *.pyc
 .DS_Store

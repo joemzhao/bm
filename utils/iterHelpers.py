@@ -28,6 +28,4 @@ def mrProcess(pathP, pathN, crossValid=4):
             line = word_tokenize(clean_string(line))
             sents.append(line)
             label.append(0)
-    print ('-' * 31)
-    print('Finished preprocessing of MR...')
     return sents, label

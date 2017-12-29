@@ -9,11 +9,7 @@ import itertools
 import numpy as np
 
 
-__all__ = ['mrTrainLoader', 'convMrTrainLoader']
-
-
-def getOneHot(y):
-    return [[0, 1] if i == 0 else [1, 0] for i in y]
+__all__ = ['mrTrainLoader', 'convMrTrainLoader', 'mrEvalLoader', 'convMrEvalLoader']
 
 
 class mrTrainLoader(baseTrainIter):
@@ -57,14 +53,18 @@ class mrTrainLoader(baseTrainIter):
         self.ptr += self.b
         assert len(xRet) == self.b
         assert len(yRet) == self.b
-        return np.asarray(xRet), np.asarray(getOneHot(yRet))
+        return np.asarray(xRet), np.asarray(self.getOneHot(yRet))
+
+    @staticmethod
+    def getOneHot(y):
+        return [[0, 1] if i == 0 else [1, 0] for i in y]
 
 
 class convMrTrainLoader(mrTrainLoader):
     def __init__(self,
                  sents,
                  label,
-                 maxSeqLen=10,
+                 maxSeqLen=100,
                  bSize=64,
                  sparseEmb=True):
         super(convMrTrainLoader, self).__init__(sents, label, bSize, sparseEmb)
@@ -108,16 +108,21 @@ class mrEvalLoader(baseEvalIter):
         self.ptr += self.b
         assert len(xRet) == self.b
         assert len(yRet) == self.b
-        return np.asarray(xRet), np.asarray(getOneHot(yRet)), replicaL
+        return np.asarray(xRet), np.asarray(self.getOneHot(yRet)), replicaL
+
+    @staticmethod
+    def getOneHot(y):
+        return [[0, 1] if i == 0 else [1, 0] for i in y]
+
 
 
 class convMrEvalLoader(mrEvalLoader):
     def __init__(self,
-                 bSize,
                  sents,
                  label,
-                 vocab,
-                 maxSeqLen):
+                 maxSeqLen,
+                 bSize,
+                 vocab):
         super(convMrEvalLoader, self).__init__(bSize, sents, label, vocab)
         self.L = None
         self.msl = maxSeqLen
@@ -131,17 +136,3 @@ class convMrEvalLoader(mrEvalLoader):
         xRet = self._push(_x) if _x.shape[1] <= self.msl else self._pop(_x)
         assert xRet.shape[1] == self.msl
         return xRet, yRet, self.L
-
-
-if __name__ == '__main__':
-    from sys import exit
-    from utils.iterHelpers import *
-
-    pathP = 'datasets/MR/rt-polarity.pos'
-    pathN = 'datasets/MR/rt-polarity.neg'
-    sents, label = mrProcess(pathP, pathN)
-    trainData = convMrTrainLoader(sents, label)
-    testData = convMrEvalLoader(64, sents, label, trainData.vocab, 10)
-    while testData.L < 0:
-        x, _, L = testData.nextBatch()
-        exit()

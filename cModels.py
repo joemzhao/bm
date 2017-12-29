@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from sys import exit
 from six.moves import xrange
-from bModel import convModel
+from base.bModel import convModel
 
 import numpy as np
 import tensorflow as tf
@@ -19,11 +19,11 @@ class baseConvClassifier(convModel):
                  bSize=64,
                  mType='hybrid',
                  seqLen=100,
+                 l2=0.1,
+                 dropout=0.1,
                  numClass=2,
                  filterSizes=[2, 3, 4],
-                 numFilters=64,
-                 l2=0.1,
-                 dropout=0.1):
+                 numFilters=64):
         super(baseConvClassifier, self).__init__(
             bSize, seqLen, filterSizes, numFilters, l2)
         self.inps = tf.placeholder(
@@ -78,10 +78,6 @@ class baseConvClassifier(convModel):
             self.pred = tf.argmax(self.logits, 1)
             self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
                 logits=self.logits, labels=self.tats)) + self.l2*l2_loss
-
-        with tf.variable_scope('evaluation/'):
-            corr = tf.equal(self.pred, tf.argmax(self.tats, 1))
-            self.acc = tf.reduce_mean(tf.cast(corr, tf.float32))
 
     def getOps(self, lr=0.001, clip=1., opt='adam'):
         opt = tf.train.AdamOptimizer(lr)

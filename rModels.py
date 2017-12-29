@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from sys import exit
 from six.moves import xrange
-from bModel import rcuModel
+from base.bModel import rcuModel
 
 import numpy as np
 import tensorflow as tf
