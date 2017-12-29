@@ -20,7 +20,7 @@ def getArgs():
 
 	""" Model parameters """
 	parser.add_argument('--MSL', type=int, default=50)
-	parser.add_argument('--RNN_LAYER', type=int, default=1)
+	parser.add_argument('--RNN_LAYERS', type=int, default=1)
 	parser.add_argument('--RNN_SIZE', type=int, default=64)
 	parser.add_argument('--EMB_SIZE', type=int, default=50)
 	parser.add_argument('--BATCH_SIZE', type=int, default=64)

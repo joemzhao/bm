@@ -19,7 +19,7 @@ import tensorflow as tf
 paths = namedtuple('paths', 'root data emb saved')
 
 
-def master(trainLoader, evalLoader, emb, model):
+def master(args, trainLoader, evalLoader, emb, model):
     train_op = model.getOps()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -34,19 +34,24 @@ def main(args, paths):
     dPath = join(paths.data, args.DATA_TYPE)
     trainS, trainL = mrProcess(join(dPath, 'train.pos'), join(dPath, 'train.neg'))
     testS, testL = mrProcess(join(dPath, 'test.pos'), join(dPath, 'test.neg'))
-    if args.MODEL_TYPE == 'CONV' and args.DATA_TYPE == 'MR':
-        trainLoader = convMrTrainLoader(
-            trainS, trainL, args.MSL, args.BATCH_SIZE, sparseEmb=True)
-        evalLoader = convMrEvalLoader(
-            testS, testL, args.MSL, args.BATCH_SIZE, trainLoader.vocab)
-        emb = embLoader(
-            args.EMB_SIZE, args.EMB_TYPE, trainLoader.reVocab)
+    
+    trainLoader = convMrTrainLoader(
+        trainS, trainL, args.MSL, args.BATCH_SIZE, sparseEmb=True)
+    evalLoader = convMrEvalLoader(
+        testS, testL, args.MSL, args.BATCH_SIZE, trainLoader.vocab)
+    emb = embLoader(
+        args.EMB_SIZE, args.EMB_TYPE, trainLoader.reVocab)
+    if args.MODEL_TYPE == 'CONV':
         model = baseConvClassifier(
             emb, args.BATCH_SIZE, args.CONV_TYPE, args.MSL, args.L2, args.DROP_OUT)
-        print ('Finish preparing the experiment... Starting writting logs')
+    elif args.MODEL_TYPE == 'RCU':
+        model = naiveRecurrentClassifier(
+            emb, args.BATCH_SIZE, args.RNN_SIZE, args.DROP_OUT, args.RNN_LAYERS)
     else:
         raise Exception('Not supported yet!')
-    master(trainLoader, evalLoader, emb, model)
+        
+    print ('Finish preparing the experiment... Starting writting logs')
+    master(args, trainLoader, evalLoader, emb, model)
 
 
 if __name__ == '__main__':

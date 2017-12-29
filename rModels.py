@@ -22,17 +22,16 @@ class naiveRecurrentClassifier(rcuModel):
                  emb,
                  bSize=64,
                  hSize=128,
+                 dropout=.2,
+                 layers=2,                 
                  ct='lstm',
                  nt='bi',
-                 dropout=.2,
-                 layers=1,
                  init=None,
                  mode='train'):
         super(naiveRecurrentClassifier, self).__init__(
             hSize, ct, dropout, layers, init, mode)
         self.b = bSize
         self.h = hSize
-
         self.inps = tf.placeholder(
             shape=[bSize, None], dtype=tf.int32, name='encoderInps')
         self.tats = tf.placeholder(
