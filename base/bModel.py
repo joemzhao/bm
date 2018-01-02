@@ -17,7 +17,6 @@ class _base(object):
     def buildGraph(self):
         pass
 
-
     def getOps(self, lr=0.001, clip=1., opt='adam'):
         opt = tf.train.AdamOptimizer(lr)
         grads = opt.compute_gradients(self.loss)

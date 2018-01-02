@@ -7,21 +7,24 @@ from os.path import join
 from collections import namedtuple
 
 from utils.iterHelpers import *
+from utils.aux import *
 from rModels import *
 from cModels import *
 from embLoader import *
 from dataLoaders import *
 from parameters import getArgs
 
+import time
 import numpy as np
 import tensorflow as tf
 
-paths = namedtuple('paths', 'root data emb saved')
+paths = namedtuple('paths', 'root data emb saved logger')
 
 
-def master(args, trainLoader, evalLoader, emb, model):
+def master(args, paths, trainLoader, evalLoader, model):
     """ Given model and data, controlling training procedure """
-    print ('* Finish defining model. Start training...\n')
+    r('-'*25, paths.logger, 'a', rt=False)
+    r('Finish defining model. Start training...', paths.logger, 'a')
     train_op = model.getOps()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -37,7 +40,6 @@ def main(args, paths):
     dPath = join(paths.data, args.DATA_TYPE)
     trainS, trainL = mrProcess(join(dPath, 'train.pos'), join(dPath, 'train.neg'))
     testS, testL = mrProcess(join(dPath, 'test.pos'), join(dPath, 'test.neg'))
-
     if args.MODEL_TYPE == 'CONV':
         trainLoader = convMrTrainLoader(
             trainS, trainL, args.MSL, args.BATCH_SIZE, sparseEmb=True)
@@ -59,7 +61,11 @@ def main(args, paths):
     else:
         raise Exception('Not supported yet!')
         exit()
-    master(args, trainLoader, evalLoader, emb, model)
+    r('Start logging...', paths.logger, 'w')
+    r('-'*25, paths.logger, 'a', rt=False)
+    for k, v in vars(args).iteritems():
+        r(str(k) + ':  ' + str(v), paths.logger, 'a', rt=False)
+    master(args, paths, trainLoader, evalLoader, model)
 
 
 if __name__ == '__main__':
@@ -67,4 +73,5 @@ if __name__ == '__main__':
     ALL_DATA = join(ROOT_DIR, 'datasets/')
     ALL_EMB = join(ROOT_DIR, 'embs/')
     SAVE_MODEL = join(ROOT_DIR, 'saved_models/')
-    main(getArgs(), paths(ROOT_DIR, ALL_DATA, ALL_EMB, SAVE_MODEL))
+    LOGGER = join(ROOT_DIR, 'logger.txt')
+    main(getArgs(), paths(ROOT_DIR, ALL_DATA, ALL_EMB, SAVE_MODEL, LOGGER))

@@ -1,0 +1,22 @@
+2018:01:02 23:56:16	Start logging...
+-------------------------
+OPT:  adam
+GRAD_CLIP:  5.0
+RNN_SIZE:  64
+MAX_VOCAB:  50000
+DATA_TYPE:  MR
+DROP_OUT:  0.1
+RNN_LAYERS:  1
+EVAL_EVERY:  100
+BATCH_SIZE:  64
+EMB_SIZE:  50
+CONV_TYPE:  hybrid
+MSL:  50
+LR:  0.001
+EMB_TYPE:  glove
+MAX_NUM_KEEP:  100
+MODEL_TYPE:  RCU
+L2:  0.1
+SAVE_EVERY:  5
+-------------------------
+2018:01:02 23:56:16	Finish defining model. Start training...
