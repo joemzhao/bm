@@ -23,7 +23,7 @@ class naiveRecurrentClassifier(rcuModel):
                  bSize=64,
                  hSize=128,
                  dropout=.2,
-                 layers=2,                 
+                 layers=2,
                  ct='lstm',
                  nt='bi',
                  init=None,
@@ -39,6 +39,7 @@ class naiveRecurrentClassifier(rcuModel):
         with tf.device('/cpu:0'):
             self.inpsEmb = tf.nn.embedding_lookup(emb, self.inps)
         self.logits = self.buildGraph(nt, ct, layers, dropout, init, mode)
+        self.loss = self._computeLoss(self.logits)
 
     def buildGraph(self, nt, ct, layers, dropout, init, mode):
         """ For classifier the final state of a cell is discarded.
@@ -76,15 +77,6 @@ class naiveRecurrentClassifier(rcuModel):
         wh = tf.layers.dense(inputs=wh, units=self.h/2, activation=tf.nn.tanh)
         logits = tf.layers.dense(inputs=wh, units=2, activation=None)
         return logits
-
-    def getOps(self, lr=0.001, clip=1., opt='adam'):
-        self.loss = self._computeLoss(self.logits)
-        opt = tf.train.AdamOptimizer(lr)
-        grads = opt.compute_gradients(self.loss)
-        with tf.variable_scope('grad_clip'):
-            clip_grads = [(tf.clip_by_norm(grad, clip), v) for grad, v in grads]
-        train_op = opt.apply_gradients(clip_grads)
-        return train_op
 
     def _computeLoss(self, logits):
         return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(

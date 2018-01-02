@@ -83,9 +83,9 @@ class convMrTrainLoader(mrTrainLoader):
 
 class mrEvalLoader(baseEvalIter):
     def __init__(self,
-                 bSize,
                  sents,
                  label,
+                 bSize,
                  vocab):
         super(mrEvalLoader, self).__init__(bSize, sents, label, vocab)
 

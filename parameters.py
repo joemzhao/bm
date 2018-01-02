@@ -1,5 +1,5 @@
 from __future__ import print_function
-from __future__ import absolute_import 
+from __future__ import absolute_import
 
 from os.path import join
 
@@ -15,7 +15,7 @@ def getArgs():
 	parser = argparse.ArgumentParser()
 
 	""" Model type """
-	parser.add_argument('--MODEL_TYPE', type=str, default='CONV')
+	parser.add_argument('--MODEL_TYPE', type=str, default='RCU')
 	parser.add_argument('--CONV_TYPE', type=str, default='hybrid')
 
 	""" Model parameters """
@@ -51,5 +51,3 @@ def getArgs():
 
 if __name__ == '__main__':
 	getArgs()
-
-

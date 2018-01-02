@@ -20,6 +20,8 @@ paths = namedtuple('paths', 'root data emb saved')
 
 
 def master(args, trainLoader, evalLoader, emb, model):
+    """ Given model and data, controlling training procedure """
+    print ('* Finish defining model. Start training...\n')
     train_op = model.getOps()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -31,26 +33,32 @@ def master(args, trainLoader, evalLoader, emb, model):
 
 
 def main(args, paths):
+    """ Obtaining model, embedding and dataloaders based on specifiaction """
     dPath = join(paths.data, args.DATA_TYPE)
     trainS, trainL = mrProcess(join(dPath, 'train.pos'), join(dPath, 'train.neg'))
     testS, testL = mrProcess(join(dPath, 'test.pos'), join(dPath, 'test.neg'))
-    
-    trainLoader = convMrTrainLoader(
-        trainS, trainL, args.MSL, args.BATCH_SIZE, sparseEmb=True)
-    evalLoader = convMrEvalLoader(
-        testS, testL, args.MSL, args.BATCH_SIZE, trainLoader.vocab)
-    emb = embLoader(
-        args.EMB_SIZE, args.EMB_TYPE, trainLoader.reVocab)
+
     if args.MODEL_TYPE == 'CONV':
+        trainLoader = convMrTrainLoader(
+            trainS, trainL, args.MSL, args.BATCH_SIZE, sparseEmb=True)
+        evalLoader = convMrEvalLoader(
+            testS, testL, args.MSL, args.BATCH_SIZE, trainLoader.vocab)
+        emb = embLoader(
+            args.EMB_SIZE, args.EMB_TYPE, trainLoader.reVocab)
         model = baseConvClassifier(
             emb, args.BATCH_SIZE, args.CONV_TYPE, args.MSL, args.L2, args.DROP_OUT)
     elif args.MODEL_TYPE == 'RCU':
+        trainLoader = mrTrainLoader(
+            trainS, trainL, args.BATCH_SIZE, sparseEmb=True)
+        evalLoader = mrEvalLoader(
+            testS, testL, args.BATCH_SIZE, trainLoader.vocab)
+        emb = embLoader(
+            args.EMB_SIZE, args.EMB_TYPE, trainLoader.reVocab)
         model = naiveRecurrentClassifier(
-            emb, args.BATCH_SIZE, args.RNN_SIZE, args.DROP_OUT, args.RNN_LAYERS)
+            emb.emb, args.BATCH_SIZE, args.RNN_SIZE, args.DROP_OUT, args.RNN_LAYERS)
     else:
         raise Exception('Not supported yet!')
-        
-    print ('Finish preparing the experiment... Starting writting logs')
+        exit()
     master(args, trainLoader, evalLoader, emb, model)
 
 
@@ -60,4 +68,3 @@ if __name__ == '__main__':
     ALL_EMB = join(ROOT_DIR, 'embs/')
     SAVE_MODEL = join(ROOT_DIR, 'saved_models/')
     main(getArgs(), paths(ROOT_DIR, ALL_DATA, ALL_EMB, SAVE_MODEL))
-

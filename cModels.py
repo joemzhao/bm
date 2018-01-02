@@ -78,11 +78,3 @@ class baseConvClassifier(convModel):
             self.pred = tf.argmax(self.logits, 1)
             self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
                 logits=self.logits, labels=self.tats)) + self.l2*l2_loss
-
-    def getOps(self, lr=0.001, clip=1., opt='adam'):
-        opt = tf.train.AdamOptimizer(lr)
-        grads = opt.compute_gradients(self.loss)
-        with tf.variable_scope('grad_clip/'):
-            clip_grads = [(tf.clip_by_norm(grad, clip), v) for grad, v in grads]
-        train_op = opt.apply_gradients(clip_grads)
-        return train_op
