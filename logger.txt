@@ -1,4 +1,4 @@
-2018:01:02 23:56:16	Start logging...
+2018:01:03 23:30:07	Start logging...
 -------------------------
 OPT:  adam
 GRAD_CLIP:  5.0
@@ -7,16 +7,18 @@ MAX_VOCAB:  50000
 DATA_TYPE:  MR
 DROP_OUT:  0.1
 RNN_LAYERS:  1
-EVAL_EVERY:  100
-BATCH_SIZE:  64
+MAX_EPOCH:  100
+EVAL_EVERY:  1
+BATCH_SIZE:  10
 EMB_SIZE:  50
 CONV_TYPE:  hybrid
 MSL:  50
 LR:  0.001
-EMB_TYPE:  glove
 MAX_NUM_KEEP:  100
-MODEL_TYPE:  RCU
+MODEL_TYPE:  CONV
 L2:  0.1
-SAVE_EVERY:  5
+SEED:  666
+EMB_TYPE:  random
 -------------------------
-2018:01:02 23:56:16	Finish defining model. Start training...
+2018:01:03 23:30:07	Finish defining model. Start training...
+2018:01:03 23:30:15	Done epoch 1, loss: 871.611379743

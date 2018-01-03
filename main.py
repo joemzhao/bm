@@ -8,6 +8,7 @@ from collections import namedtuple
 
 from utils.iterHelpers import *
 from utils.aux import *
+from helpers import *
 from rModels import *
 from cModels import *
 from embLoader import *
@@ -21,18 +22,54 @@ import tensorflow as tf
 paths = namedtuple('paths', 'root data emb saved logger')
 
 
+def evaluate(paths, evalLoader, model, epochNum):
+    _l = -1
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
+    model.saver.restore(sess,
+        join(paths.saved, 'epoch'+str(epochNum), '_model.ckpt'))
+    predict = []
+    groundt = []
+    while _l < 0:
+        x, _y, _l = evalLoader.nextBatch()
+        feed_dict = {model.inps: x}
+        pred = sess.run(model.pred, feed_dict=feed_dict)
+        y = evalLoader.reverseOneHot(_y)
+        predict.extend(pred.tolist())
+        groundt.extend(y)
+    acc = accCal(predict, groundt, _l)
+    r('Evaluating accuracy: {}'.format(acc), paths.logger)
+    sess.close()
+    evalLoader.reset()
+
+
 def master(args, paths, trainLoader, evalLoader, model):
     """ Given model and data, controlling training procedure """
-    r('-'*25, paths.logger, 'a', rt=False)
-    r('Finish defining model. Start training...', paths.logger, 'a')
+    r('-'*25, paths.logger, rt=False)
+    r('Finish defining model. Start training...', paths.logger)
     train_op = model.getOps()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
-    while True:
+    epochLosses = []
+    epochLoss = 0.
+    stepNum = 0
+    epochNum = 0
+    while epochNum <= args.MAX_EPOCH:
+        stepNum += 1
         x, y = trainLoader.nextBatch()
         feed_dict = {model.inps: x, model.tats:y}
         _, batchLoss = sess.run([train_op, model.loss], feed_dict=feed_dict)
-        print (batchLoss)
+        epochLoss += batchLoss
+        if epochNum != trainLoader.epoch:
+            epochNum += 1
+            epochLosses.append(epochLoss)
+            r('Done epoch {}, loss: {}'.format(epochNum, epochLoss), paths.logger)
+            epochLoss = 0.
+            if epochNum % args.EVAL_EVERY == 0:
+                r('$'*25, paths.logger)
+                saveModel(sess, paths, model, epochNum)
+                evaluate(paths, evalLoader, model, epochNum)
+                r('$'*25, paths.logger)
 
 
 def main(args, paths):
@@ -62,9 +99,10 @@ def main(args, paths):
         raise Exception('Not supported yet!')
         exit()
     r('Start logging...', paths.logger, 'w')
-    r('-'*25, paths.logger, 'a', rt=False)
+    r('-'*25, paths.logger, rt=False)
     for k, v in vars(args).iteritems():
-        r(str(k) + ':  ' + str(v), paths.logger, 'a', rt=False)
+        r(str(k) + ':  ' + str(v), paths.logger, rt=False)
+    checkPath(paths)
     master(args, paths, trainLoader, evalLoader, model)
 
 
@@ -72,6 +110,6 @@ if __name__ == '__main__':
     ROOT_DIR = '/Users/mzhao/Desktop/major/bm'
     ALL_DATA = join(ROOT_DIR, 'datasets/')
     ALL_EMB = join(ROOT_DIR, 'embs/')
-    SAVE_MODEL = join(ROOT_DIR, 'saved_models/')
+    SAVE_MODEL = join(ROOT_DIR, 'saved_model/')
     LOGGER = join(ROOT_DIR, 'logger.txt')
     main(getArgs(), paths(ROOT_DIR, ALL_DATA, ALL_EMB, SAVE_MODEL, LOGGER))

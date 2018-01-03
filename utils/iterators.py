@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import abc
 import random
-
+import copy
 
 __all__ = ['baseTrainIter', 'baseEvalIter']
 
@@ -49,5 +49,20 @@ class baseTrainIter(_baseIter):
 class baseEvalIter(_baseIter):
     def __init__(self, bSize, sents, label, vocab):
         super(baseEvalIter, self).__init__(bSize, sents, label)
-        self.wd2id = lambda wds: [vocab[wd] for wd in wds]
+        self.vocab = copy.deepcopy(vocab)
         self.pad = lambda wds, ml: wds + ['<pad>'] * (ml - len(wds))
+
+    def wd2id(self, wds):
+        """when evalutating we need to consider OOV words for vocabulary of
+        training dataset"""
+        ret = []
+        for wd in wds:
+            try:
+                _id = self.vocab[wd]
+            except KeyError:
+                _id = self.vocab['<unk>']
+            ret.append(_id)
+        return ret
+
+    def reset(self):
+        self.ptr = 0

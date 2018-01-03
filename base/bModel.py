@@ -9,6 +9,9 @@ import tensorflow as tf
 import abc
 
 
+__all__ = ['rcuModel', 'convModel']
+
+
 class _base(object):
     def __init__(self):
         self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=50)
@@ -22,12 +25,13 @@ class _base(object):
         grads = opt.compute_gradients(self.loss)
         with tf.variable_scope('grad_clip/'):
             clip_grads = [(tf.clip_by_norm(grad, clip), v) for grad, v in grads]
-        train_op = opt.apply_gradients(clip_grads)
-        return train_op
+        self.train_op = opt.apply_gradients(clip_grads)
+        return self.train_op
 
 
 class rcuModel(_base):
     def __init__(self, hSize, ct, dropout, layers, init, mode):
+        super(rcuModel, self).__init__()
         self.defaultCell = lambda: self._getCell(
             hSize, ct, dropout, layers, init, mode)
 
@@ -49,6 +53,7 @@ class rcuModel(_base):
 
 class convModel(_base):
     def __init__(self, bSize, seqLen, filterSizes, numFilters, l2):
+        super(convModel, self).__init__()
         self.b = bSize
         self.sl = seqLen
         self.fts = filterSizes

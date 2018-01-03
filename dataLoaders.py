@@ -94,7 +94,7 @@ class mrEvalLoader(baseEvalIter):
 
     def _nextBatch(self):
         replicaL = -1
-        if (self.ptr+self.b) < len(self.x):
+        if (self.ptr+self.b) <= len(self.x):
             xRet = self.x[self.ptr:self.ptr+self.b]
             yRet = self.y[self.ptr:self.ptr+self.b]
         else:
@@ -114,6 +114,9 @@ class mrEvalLoader(baseEvalIter):
     def getOneHot(y):
         return [[0, 1] if i == 0 else [1, 0] for i in y]
 
+    @staticmethod
+    def reverseOneHot(y):
+        return [0 if i.tolist() == [0, 1] else 1 for i in y]
 
 
 class convMrEvalLoader(mrEvalLoader):
@@ -123,7 +126,7 @@ class convMrEvalLoader(mrEvalLoader):
                  maxSeqLen,
                  bSize,
                  vocab):
-        super(convMrEvalLoader, self).__init__(bSize, sents, label, vocab)
+        super(convMrEvalLoader, self).__init__(sents, label, bSize, vocab)
         self.L = None
         self.msl = maxSeqLen
         self._push = lambda x: np.concatenate((x,
