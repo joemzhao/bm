@@ -37,13 +37,13 @@ class mrTrainLoader(baseTrainIter):
         return self._nextBatch()
 
     def _nextBatch(self):
-        if (self.ptr+self.b) < len(self.x):
+        if (self.ptr+self.b) <= len(self.x):
             xRet = self.x[self.ptr:self.ptr+self.b]
             yRet = self.y[self.ptr:self.ptr+self.b]
         else:
             print ('Epoch %d finished!' % self.epoch)
-            xRet = self.x[self.ptr:-1]
-            yRet = self.y[self.ptr:-1]
+            xRet = self.x[self.ptr:]
+            yRet = self.y[self.ptr:]
             _sample = np.random.randint(0, len(self.x)-1, self.b-len(xRet))
             xRet.extend([self.x[i] for i in _sample])
             yRet.extend([self.y[i] for i in _sample])
@@ -94,15 +94,16 @@ class mrEvalLoader(baseEvalIter):
 
     def _nextBatch(self):
         replicaL = -1
-        if (self.ptr+self.b) < len(self.x):
+        if (self.ptr+self.b) <= len(self.x):
             xRet = self.x[self.ptr:self.ptr+self.b]
             yRet = self.y[self.ptr:self.ptr+self.b]
         else:
-            xRet = self.x[self.ptr:-1]
-            yRet = self.y[self.ptr:-1]
+            xRet = self.x[self.ptr:]
+            yRet = self.y[self.ptr:]
             replicaL = self.b-len(xRet)
             xRet.extend([xRet[-1]] * replicaL)
             yRet.extend([yRet[-1]] * replicaL)
+            self.reset()
         ml = max([len(x) for x in xRet])
         xRet = [self.wd2id(self.pad(x, ml)) for x in xRet]
         self.ptr += self.b
