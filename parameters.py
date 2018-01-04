@@ -23,7 +23,7 @@ def getArgs():
 	parser.add_argument('--RNN_LAYERS', type=int, default=1)
 	parser.add_argument('--RNN_SIZE', type=int, default=64)
 	parser.add_argument('--EMB_SIZE', type=int, default=50)
-	parser.add_argument('--BATCH_SIZE', type=int, default=10)
+	parser.add_argument('--BATCH_SIZE', type=int, default=128)
 	parser.add_argument('--MAX_VOCAB', type=int, default=50000)
 	parser.add_argument('--OPT', type=str, default='adam')
 	parser.add_argument('--LR', type=float, default=1e-3)
@@ -39,7 +39,7 @@ def getArgs():
 
 	""" PATH """
 	parser.add_argument('--DATA_TYPE', type=str, default='MR')
-	parser.add_argument('--EMB_TYPE', type=str, default='random')
+	parser.add_argument('--EMB_TYPE', type=str, default='glove')
 
 	args = parser.parse_args()
 	print (50 * '~')

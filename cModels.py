@@ -75,6 +75,6 @@ class baseConvClassifier(convModel):
 
         with tf.variable_scope('loss-computation/'):
             self.logits = tf.nn.xw_plus_b(_f, pW, pb)
-            self.pred = tf.argmax(self.logits, 1)
             self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(
                 logits=self.logits, labels=self.tats)) + self.l2*l2_loss
+        self.pred = tf.argmax(self.logits, 1)

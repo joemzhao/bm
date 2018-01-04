@@ -39,6 +39,7 @@ class naiveRecurrentClassifier(rcuModel):
         with tf.device('/cpu:0'):
             self.inpsEmb = tf.nn.embedding_lookup(emb, self.inps)
         self.logits = self.buildGraph(nt, ct, layers, dropout, init, mode)
+        self.pred = tf.argmax(self.logits, 1)
         self.loss = self._computeLoss(self.logits)
 
     def buildGraph(self, nt, ct, layers, dropout, init, mode):

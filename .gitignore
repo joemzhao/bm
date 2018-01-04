@@ -14,6 +14,7 @@ utils/*.pyc
 base/*.pyc
 
 saved_model/
+tools/
 
 *.pyc
 .DS_Store
