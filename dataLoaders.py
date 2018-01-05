@@ -109,15 +109,7 @@ class mrEvalLoader(baseEvalIter):
         self.ptr += self.b
         assert len(xRet) == self.b
         assert len(yRet) == self.b
-        return np.asarray(xRet), np.asarray(self.getOneHot(yRet)), replicaL
-
-    @staticmethod
-    def getOneHot(y):
-        return [[0, 1] if i == 1 else [1, 0] for i in y]
-
-    @staticmethod
-    def reverseOneHot(y):
-        return [1 if i.tolist() == [0, 1] else 0 for i in y]
+        return np.asarray(xRet), np.asarray(yRet), replicaL
 
 
 class convMrEvalLoader(mrEvalLoader):
