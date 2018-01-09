@@ -32,4 +32,4 @@ def accCal(pred, ground, l):
     assert l >= 0, 'L must >= 0.'
     pred = np.asarray(pred[:-l or None])
     ground = np.asarray(ground[:-l or None])
-    return sum(abs(pred-ground))/len(pred)
+    return 1.-sum(abs(pred-ground))/len(pred)

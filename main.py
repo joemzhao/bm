@@ -20,8 +20,8 @@ import numpy as np
 import tensorflow as tf
 
 paths = namedtuple('paths', 'root data emb saved logger')
-tf.set_random_seed(666)
-np.random.seed(666)
+tf.set_random_seed(6666)
+np.random.seed(6666)
 
 
 def evaluate(paths, sess, evalLoader, model, epochNum):
@@ -49,7 +49,7 @@ def master(args, paths, trainLoader, evalLoader, model):
     epochLoss = 0.
     stepNum = 0
     epochNum = 0
-    while epochNum <= args.MAX_EPOCH:
+    while epochNum < args.MAX_EPOCH:
         stepNum += 1
         x, y = trainLoader.nextBatch()
         feed_dict = {model.inps: x, model.tats:y}
