@@ -44,8 +44,8 @@ class embLoader(object):
         else:
             raise Exception('No supported embedding type!')
 
-        print ('-' * 31)
+        print ('-' * 25)
         print ('Embedding type ' + str(embType) + ' ' + str(embSize))
         print ('Finish obtain glove embedding ' + str(embSize))
         print ('Not shown ' + str(notShown))
-        print ('-' * 31)
+        print ('-' * 25)

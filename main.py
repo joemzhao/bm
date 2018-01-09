@@ -20,27 +20,22 @@ import numpy as np
 import tensorflow as tf
 
 paths = namedtuple('paths', 'root data emb saved logger')
+tf.set_random_seed(666)
+np.random.seed(666)
 
 
-def evaluate(paths, evalLoader, model, epochNum):
+def evaluate(paths, sess, evalLoader, model, epochNum):
     _l = -1
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
-    model.saver.restore(sess,
-        join(paths.saved, 'epoch'+str(epochNum), '_model.ckpt'))
     predict = []
     groundt = []
     while _l < 0:
-        x, _y, _l = evalLoader.nextBatch()
+        x, y, _l = evalLoader.nextBatch()
         feed_dict = {model.inps: x}
         pred = sess.run(model.pred, feed_dict=feed_dict)
-        y = evalLoader.reverseOneHot(_y)
         predict.extend(pred.tolist())
         groundt.extend(y)
     acc = accCal(predict, groundt, _l)
     r('Evaluating accuracy: {}'.format(acc), paths.logger)
-    sess.close()
-    evalLoader.reset()
 
 
 def master(args, paths, trainLoader, evalLoader, model):
@@ -68,8 +63,8 @@ def master(args, paths, trainLoader, evalLoader, model):
             if epochNum % args.EVAL_EVERY == 0:
                 r('$'*25, paths.logger)
                 saveModel(sess, paths, model, epochNum)
-                evaluate(paths, evalLoader, model, epochNum)
                 r('$'*25, paths.logger)
+                evaluate(paths, sess, evalLoader, model, epochNum)
 
 
 def main(args, paths):
@@ -97,7 +92,6 @@ def main(args, paths):
             emb.emb, args.BATCH_SIZE, args.RNN_SIZE, args.DROP_OUT, args.RNN_LAYERS)
     else:
         raise Exception('Not supported yet!')
-        exit()
     r('Start logging...', paths.logger, 'w')
     r('-'*25, paths.logger, rt=False)
     for k, v in vars(args).iteritems():

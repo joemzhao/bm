@@ -21,14 +21,11 @@ class mrTrainLoader(baseTrainIter):
         super(mrTrainLoader, self).__init__(bSize, sents, label)
         self.buildVocab(sparseEmb)
 
-    def buildVocab(self, sparseEmb=True):
+    def buildVocab(self, sparseEmb):
         aux = ['<s>', '</s>', '<unk>', '<pad>']
-        tmp = aux + list(itertools.chain.from_iterable(self.x))
-        for idx, wd in enumerate(tmp):
-            if wd in self.vocab:
-                continue
-            else:
-                self.vocab[wd] = len(self.vocab)
+        tmp = aux + list(set(itertools.chain.from_iterable(self.x)))
+        for wd in tmp:
+            self.vocab[wd] = len(self.vocab)
         self.reVocab = {v: k for k, v in self.vocab.iteritems()}
         del aux, tmp
         print('* Created vocabulary with type sparseEmb is ' + str(sparseEmb))
@@ -110,6 +107,14 @@ class mrEvalLoader(baseEvalIter):
         assert len(xRet) == self.b
         assert len(yRet) == self.b
         return np.asarray(xRet), np.asarray(yRet), replicaL
+
+    @staticmethod
+    def getOneHot(y):
+        return [[0, 1] if i == 1 else [1, 0] for i in y]
+
+    @staticmethod
+    def reverseOneHot(y):
+        return [1 if i.tolist() == [0, 1] else 0 for i in y]
 
 
 class convMrEvalLoader(mrEvalLoader):

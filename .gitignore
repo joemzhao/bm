@@ -16,5 +16,6 @@ base/*.pyc
 saved_model/
 tools/
 
+*.tar.gz
 *.pyc
 .DS_Store
