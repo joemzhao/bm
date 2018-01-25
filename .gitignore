@@ -2,6 +2,8 @@ datasets/MR/
 datasets/SST/
 datasets/TREC/
 datasets/CR/
+datasets/BB/.DS_Store
+datasets/BB/engraw.txt
 datasets/.DS_Store
 datasets/*.pyc
 
