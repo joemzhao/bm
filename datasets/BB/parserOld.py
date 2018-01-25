@@ -32,7 +32,7 @@ def prep(path):
         line = re.sub(r'\d*:', '', line)
         line = re.sub(r'\b\d+\b', '', line)
         line = re.sub('\r\n', ' ', line)
-        x.append(line[1:])
+        x.append(line)
     del tmp, _x
     return x
 
