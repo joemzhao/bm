@@ -5,6 +5,7 @@ from __future__ import print_function
 from sys import exit
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from helpers.aux import *
+from parserNew import prepNew
 
 import re
 import numpy as np
@@ -12,7 +13,7 @@ import matplotlib.pyplot as plt
 
 """ For Old Testament data only ..."""
 
-def prep(path):
+def prepOld(path):
     x = []
     _x = []
     tmp = ''
@@ -37,27 +38,5 @@ def prep(path):
     return x
 
 
-def generatePair(verbose=False, window=20):
-    sid = SentimentIntensityAnalyzer()
-    x = prep('./engraw.txt')
-    y = []
-    cs = []
-    for s in x:
-        ss = sid.polarity_scores(s)
-        y.append(ss)
-        if verbose:
-            print ('---')
-            print(s)
-            for k in sorted(ss):
-                print('{}: {}, '.format(k, ss[k]), end='')
-            print()
-    series, stats = getSents(y)
-    rollmean = np.convolve(series, np.ones(window)/window, mode='same')
-    print (stats)
-    plt.plot(rollmean)
-    plt.plot(np.zeros(len(rollmean)))
-    plt.show()
-
-
 if __name__ == '__main__':
-    generatePair()
+    pass
