@@ -3,7 +3,8 @@ datasets/SST/
 datasets/TREC/
 datasets/CR/
 datasets/BB/.DS_Store
-datasets/BB/engraw.txt
+datasets/BB/*.txt
+datasets/BB/*.vec
 datasets/BB/bibleeng
 datasets/.DS_Store
 datasets/*.pyc

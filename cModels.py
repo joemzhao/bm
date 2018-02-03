@@ -19,11 +19,11 @@ class baseConvClassifier(convModel):
                  bSize=64,
                  mType='hybrid',
                  seqLen=100,
-                 l2=0.1,
-                 dropout=0.1,
+                 l2=0.05,
+                 dropout=0.5,
                  numClass=2,
-                 filterSizes=[2, 3, 4],
-                 numFilters=64):
+                 filterSizes=[3, 4, 5],
+                 numFilters=128):
         super(baseConvClassifier, self).__init__(
             bSize, seqLen, filterSizes, numFilters, l2)
         self.inps = tf.placeholder(

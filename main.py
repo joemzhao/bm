@@ -20,8 +20,8 @@ import numpy as np
 import tensorflow as tf
 
 paths = namedtuple('paths', 'root data emb saved logger')
-tf.set_random_seed(6666)
-np.random.seed(6666)
+tf.set_random_seed(3)
+np.random.seed(3)
 
 
 def evaluate(paths, sess, evalLoader, model, epochNum):
@@ -101,7 +101,7 @@ def main(args, paths):
 
 
 if __name__ == '__main__':
-    ROOT_DIR = '/Users/mzhao/Desktop/major/bm'
+    ROOT_DIR = '/Users/mzhao/Desktop/master/bm'
     ALL_DATA = join(ROOT_DIR, 'datasets/')
     ALL_EMB = join(ROOT_DIR, 'embs/')
     SAVE_MODEL = join(ROOT_DIR, 'saved_model/')

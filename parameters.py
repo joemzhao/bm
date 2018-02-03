@@ -19,16 +19,16 @@ def getArgs():
 	parser.add_argument('--CONV_TYPE', type=str, default='hybrid')
 
 	""" Model parameters """
-	parser.add_argument('--MSL', type=int, default=50)
+	parser.add_argument('--MSL', type=int, default=25)
 	parser.add_argument('--RNN_LAYERS', type=int, default=1)
 	parser.add_argument('--RNN_SIZE', type=int, default=10)
 	parser.add_argument('--EMB_SIZE', type=int, default=50)
-	parser.add_argument('--BATCH_SIZE', type=int, default=3)
+	parser.add_argument('--BATCH_SIZE', type=int, default=64)
 	parser.add_argument('--MAX_VOCAB', type=int, default=50000)
 	parser.add_argument('--OPT', type=str, default='adam')
 	parser.add_argument('--LR', type=float, default=1e-3)
-	parser.add_argument('--L2', type=float, default=.1)
-	parser.add_argument('--DROP_OUT', type=float, default=.1)
+	parser.add_argument('--L2', type=float, default=.05)
+	parser.add_argument('--DROP_OUT', type=float, default=.5)
 	parser.add_argument('--GRAD_CLIP', type=float, default=5.)
 
 	""" Training settings """
